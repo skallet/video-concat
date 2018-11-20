@@ -100,6 +100,10 @@ def main(argv):
 
    try:
       fileList = os.listdir(inputFolder)
+      shuffle(fileList)
+
+      if (take is not None):
+         fileList = fileList[:take]
    except:
       print('Input folder not found, use -h or --help to show help message.')
       sys.exit(2)
@@ -111,11 +115,6 @@ def main(argv):
    if (len(videos) <= 0):
       print('No input video found, use -h or --help to show help message.')
       sys.exit(2)
-
-   shuffle(videos)
-
-   if (take is not None):
-      videos = videos[:take]
 
    result = concatenate_videoclips(videos)
    result.write_videofile(outputFile, codec=codec)
