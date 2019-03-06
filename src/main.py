@@ -104,17 +104,27 @@ def main(argv):
 
       if (take is not None):
          fileList = fileList[:take]
+      print(fileList)
    except:
       print('Input folder not found, use -h or --help to show help message.')
       sys.exit(2)
 
-   videos = []
-   for f in fileList:
-      videos.append(VideoFileClip(os.path.join(inputFolder, f)))
-
-   if (len(videos) <= 0):
+   if (len(fileList) <= 0):
       print('No input video found, use -h or --help to show help message.')
       sys.exit(2)
+
+   videos = []
+   wWidth = None
+   hHeight = None
+
+   for f in fileList:
+      clip = VideoFileClip(os.path.join(inputFolder, f))
+      if (wWidth is None):
+         wWidth, hHeight = clip.size
+      # clip.set_fps(24)
+      # clip.resize(width=wWidth, height=hHeight)
+      clip.crossfadein(0.5)
+      videos.append(clip)
 
    result = concatenate_videoclips(videos)
    result.write_videofile(outputFile, codec=codec)
