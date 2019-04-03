@@ -117,12 +117,17 @@ def main(argv):
    wWidth = None
    hHeight = None
 
+   clipList = []
    for f in fileList:
       clip = VideoFileClip(os.path.join(inputFolder, f))
-      if (wWidth is None):
-         wWidth, hHeight = clip.size
+      clipList.append(clip)
+      cwWidth, chHeight = clip.size
+      wWidth = max(wWidth, cwWidth)
+      hHeight = max(hHeight, chHeight)
+
+   for clip in clipList:
       # clip.set_fps(24)
-      # clip.resize(width=wWidth, height=hHeight)
+      clip.resize(width=wWidth, height=hHeight)
       clip.crossfadein(0.5)
       videos.append(clip)
 
