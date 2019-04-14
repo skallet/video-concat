@@ -12,6 +12,7 @@ def print_help():
    print('\t-f <folder> # folder with video files to be edited')
    print('\t-o <output-file> # output file to store results')
    print('\t-t <take-first> # if set, take only first N videos from random list')
+   print('\t-r # strech video sizes to its max')
    print('## word specified arguments:')
    print('\t--help # show this help')
    print('\t--folder=<folder> # folder with video files to be edited')
@@ -58,13 +59,14 @@ def main(argv):
    outputFile = None
    codec = None
    take = None
+   method = "compose"
 
    print_short_licence()
 
    try:
       opts, args = getopt.getopt(
          argv,
-         "hf:o:c:t:",
+         "hf:o:c:t:r",
          ["help", "folder=", "output="]
       )
    except getopt.GetoptError:
@@ -87,6 +89,8 @@ def main(argv):
          codec = arg
       elif opt in ("-t"):
          take = max(1, int(arg))
+      elif opt in ("-r"):
+         method = "chain"
 
    if codec is not None and not codecs.has_key(codec):
       print('Unknown codec, use -h or --help to show help message.')
@@ -127,11 +131,12 @@ def main(argv):
 
    for clip in clipList:
       # clip.set_fps(24)
-      clip.resize(width=wWidth, height=hHeight)
-      clip.crossfadein(0.5)
+      if method == "chain":
+         clip = clip.resize(width=wWidth, height=hHeight)
+      clip = clip.crossfadein(0.5)
       videos.append(clip)
 
-   result = concatenate_videoclips(videos)
+   result = concatenate_videoclips(videos, method=method, padding=0.5)
    result.write_videofile(outputFile, codec=codec)
 
 if __name__ == "__main__":
